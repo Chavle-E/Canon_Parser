@@ -12,21 +12,25 @@ def scrape_canon_preview(category, driver):
     scroll_to_load_more(driver, "//button[@class='primary amscroll-load-button' and @amscroll_type='after']")
     page_source = driver.page_source
     soup = BeautifulSoup(page_source, 'html.parser')
+    category = soup.find('h1', class_="product-item-name").get_text(strip=True)
     amscroll_divs = {}
     for i in range(1, 4):
         amscroll_divs[f'page_{i}'] = soup.find_all('div', attrs={'amscroll-page': str(i)})
-
+    camera_dict = {}
     for page, divs in amscroll_divs.items():
         for div in divs:
             div_html = str(div)
             div_soup = BeautifulSoup(div_html, 'html.parser')
 
             camera_names = div_soup.find_all('h2', class_='product name product-item-name')
-            camera_prices = div_soup.find_all('span', class_='price')
-            for name in camera_names:
+            price_spans = div_soup.find_all('span', class_='normal-price')
+            for name, price_span in zip(camera_names, price_spans):
                 model = name.get_text(strip=True)
-            for price in camera_prices:
-                print(price.get_text(strip=True))
+                price = price_span.find('span', class_='price').get_text(strip=True)
+                detailed_link = name.find('a', class_='product-item-link').get('href')
+                print(category)
+                camera_dict[model] = price
 
+    return camera_dict
 
 

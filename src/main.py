@@ -6,7 +6,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 chrome_options = Options()
 chrome_options.add_experimental_option("prefs", {
-    "profile.default_content_setting_values.notifications": 2  # 2 means 'Block'
+    "profile.default_content_setting_values.notifications": 2
 })
 
 # Initialize WebDriver with ChromeOptions
