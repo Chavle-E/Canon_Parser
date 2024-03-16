@@ -16,13 +16,17 @@ def scrape_canon_preview(category, driver):
     for i in range(1, 4):
         amscroll_divs[f'page_{i}'] = soup.find_all('div', attrs={'amscroll-page': str(i)})
 
-    print(amscroll_divs)
+    for page, divs in amscroll_divs.items():
+        for div in divs:
+            div_html = str(div)
+            div_soup = BeautifulSoup(div_html, 'html.parser')
+
+            camera_names = div_soup.find_all('h2', class_='product name product-item-name')
+            camera_prices = div_soup.find_all('span', class_='price')
+            for name in camera_names:
+                model = name.get_text(strip=True)
+            for price in camera_prices:
+                print(price.get_text(strip=True))
 
 
-    # for product_div in product_divs:
-    #     ol = product_div.find('ol', {'id': 'product-items'})
-    #     cameras = ol.find_all('li')
-    #     for camera in cameras:
-    #         name_h2 = camera.find('h2', class_='product name product-item-name')
-    #         model = name_h2.find('a', class_='product-item-link').text.strip()
-    #         print(model)
+

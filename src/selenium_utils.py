@@ -23,10 +23,13 @@ def scroll_to_load_more(driver, xpath):
             load_more_button = find_load_more(driver, xpath)
             if load_more_button:
                 driver.execute_script(
-                    "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'});",
+                    "arguments[0].scrollIntoView({block: 'center', inline: 'center'});",
                     load_more_button)
-                time.sleep(3)
-                driver.execute_script("arguments[0].click();", load_more_button)
+                WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, xpath))
+                )
+                time.sleep(1)
+                load_more_button.click()
                 time.sleep(3)
             else:
                 print("No more 'Load More' buttons to click.")
@@ -35,5 +38,5 @@ def scroll_to_load_more(driver, xpath):
             print("The 'Load More' button does not exist.")
             break
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print("Print")
             break
