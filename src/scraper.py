@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from selenium_utils import scroll_to_load_more, wait_for_page_load
-from schema import CanonPreview
+from schema import CanonPreview, ImageURLS
 
 BASE_URL = 'https://www.usa.canon.com/'
 
@@ -44,11 +44,43 @@ def scrape_canon_image(url, driver):
     wait_for_page_load(driver)
     page_source = driver.page_source
     soup = BeautifulSoup(page_source, 'html.parser')
-    photo_div = soup.find('div', class_='fotorama__nav-wrap fotorama__nav-wrap--vertical')
-    photo_list = []
-    for photo in photo_div:
-        photo_list.append(photo.find('img', class_='fotorama__img').get('src'))
+    photos = soup.find_all('div', class_='fotorama__thumb fotorama__loaded fotorama__loaded--img')
+    image_urls = []
+    for photo in photos:
+        image_urls.append(photo.find('img', class_='fotorama__img')['src'])
 
-    print(photo_list)
+    ImageURLS.parse_obj({'images': image_urls})
+    return image_urls
 
 
+def scrape_canon_pdf(url, driver):
+    driver.get(url)
+    wait_for_page_load(driver)
+    page_source = driver.page_source
+    soup = BeautifulSoup(page_source, 'html.parser')
+    pdf_classes = " ".join(['tech-spec', 'pdf', 'cms-accordion', 'attr-group-info'])
+    pdf_div = soup.find('div', class_=lambda y: y and pdf_classes in y)
+    pdf_data = [pdf_div.find('a')['href'] if pdf_div and pdf_div.find('a') else None]
+    return pdf_data
+
+
+def scrape_canon_specs(url, driver):
+    driver.get(url)
+    wait_for_page_load(driver)
+    page_source = driver.page_source
+    soup = BeautifulSoup(page_source, 'html.parser')
+
+    spec_classes = " ".join(['tech-spec', 'xml', 'cms-accordion', 'attr-group-info'])
+
+    spec_divs = soup.find_all('div', class_=lambda x: x and spec_classes in x)
+
+    specs_data = []
+    for specs in spec_divs:
+        keys = specs.find_all('div', class_='tech-spec-attr attribute')
+        values = specs.find_all('div', class_='tech-spec-attr attribute-value')
+        for key, value in zip(keys, values):
+            key_text = key.get_text(strip=True)
+            value_text = value.get_text(strip=True)
+            specs_data.append({key_text: value_text})
+
+    return specs_data

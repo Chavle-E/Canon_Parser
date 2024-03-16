@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 
 class CanonPreview(BaseModel):
@@ -6,3 +7,7 @@ class CanonPreview(BaseModel):
     price: str
     category: str
     detailed_link: str
+
+
+class ImageURLS(BaseModel):
+    images: List[str]
