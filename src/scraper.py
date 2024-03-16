@@ -39,11 +39,16 @@ def scrape_canon_preview(category, driver):
     return validated_data
 
 
+def scrape_canon_image(url, driver):
+    driver.get(url)
+    wait_for_page_load(driver)
+    page_source = driver.page_source
+    soup = BeautifulSoup(page_source, 'html.parser')
+    photo_div = soup.find('div', class_='fotorama__nav-wrap fotorama__nav-wrap--vertical')
+    photo_list = []
+    for photo in photo_div:
+        photo_list.append(photo.find('img', class_='fotorama__img').get('src'))
 
-
-
-
-
-
+    print(photo_list)
 
 
