@@ -4,12 +4,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 import time
+import random
 
 
 def wait_for_page_load(driver):
     WebDriverWait(driver,
                   10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
-    time.sleep(3)
+    for i in range(random.randrange(1, 3)):
+        time.sleep(i)
 
 
 def find_load_more(driver, xpath):
@@ -48,7 +50,6 @@ def scroll_to_load_more(driver, xpath):
                 WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable((By.XPATH, xpath))
                 )
-                time.sleep(1)
                 load_more_button.click()
                 time.sleep(3)
             else:

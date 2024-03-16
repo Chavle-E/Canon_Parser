@@ -29,8 +29,8 @@ def scrape_canon_preview(category, driver):
                 camera_dict = {
                     'model': name.get_text(strip=True),
                     'price': price_span.find('span', class_='price').get_text(strip=True),
-                    'category': category,
-                    'detailed_link': name.find('a', class_='product-item-link').get('href')
+                    'detailed_link': name.find('a', class_='product-item-link').get('href'),
+                    'category': category
                 }
 
                 CanonPreview.parse_obj(camera_dict)
@@ -50,18 +50,8 @@ def scrape_canon_image(url, driver):
         image_urls.append(photo.find('img', class_='fotorama__img')['src'])
 
     ImageURLS.parse_obj({'images': image_urls})
+
     return image_urls
-
-
-def scrape_canon_pdf(url, driver):
-    driver.get(url)
-    wait_for_page_load(driver)
-    page_source = driver.page_source
-    soup = BeautifulSoup(page_source, 'html.parser')
-    pdf_classes = " ".join(['tech-spec', 'pdf', 'cms-accordion', 'attr-group-info'])
-    pdf_div = soup.find('div', class_=lambda y: y and pdf_classes in y)
-    pdf_data = [pdf_div.find('a')['href'] if pdf_div and pdf_div.find('a') else None]
-    return pdf_data
 
 
 def scrape_canon_specs(url, driver):
@@ -71,9 +61,10 @@ def scrape_canon_specs(url, driver):
     soup = BeautifulSoup(page_source, 'html.parser')
 
     spec_classes = " ".join(['tech-spec', 'xml', 'cms-accordion', 'attr-group-info'])
+    pdf_classes = " ".join(['tech-spec', 'pdf', 'cms-accordion', 'attr-group-info'])
 
     spec_divs = soup.find_all('div', class_=lambda x: x and spec_classes in x)
-
+    pdf_div = soup.find('div', class_=lambda y: y and pdf_classes in y)
     specs_data = []
     for specs in spec_divs:
         keys = specs.find_all('div', class_='tech-spec-attr attribute')
@@ -83,4 +74,10 @@ def scrape_canon_specs(url, driver):
             value_text = value.get_text(strip=True)
             specs_data.append({key_text: value_text})
 
-    return specs_data
+    final_data = {
+        'specs': specs_data if specs_data else None,
+        'pdf': pdf_div.find('a')['href'] if pdf_div and pdf_div.find('a') else None
+    }
+
+    return final_data
+

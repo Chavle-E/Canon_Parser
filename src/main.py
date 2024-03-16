@@ -1,29 +1,29 @@
-from selenium import webdriver
 from scraper import scrape_canon_preview, scrape_canon_image, scrape_canon_specs
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 import json
+import undetected_chromedriver as uc
 
-chrome_options = Options()
-chrome_options.add_experimental_option("prefs", {
-    "profile.default_content_setting_values.notifications": 2
-})
+options = uc.ChromeOptions()
+options.add_argument("--no-sandbox")
+options.add_argument('--headless')
+options.add_argument("--disable-dev-shm-usage")
+agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
+options.add_argument(f'user-agent={agent}')
 
-# Initialize WebDriver with ChromeOptions
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+driver = uc.Chrome(options=options)
 cameras = []
 
-# categories = ['mirrorless-cameras', 'dslr-cameras', 'compact-cameras']
-# for category in categories:
-#     camera_preview = scrape_canon_preview(category, driver)
-#     cameras.extend(camera_preview)
-# for camera in cameras:
-#     camera['brand'] = 'Canon'
-#     camera['images'] = scrape_canon_image(camera['detailed_link'], driver)
-#     camera['pdf'] = scrape_canon_specs(camera['detailed_link'], driver)['pdf']
-#     camera['specs'] = scrape_canon_specs(camera['detailed_link'], driver)['specs']
+categories = ['mirrorless-cameras', 'dslr-cameras', 'compact-cameras']
+for category in categories:
+    camera_preview = scrape_canon_preview(category, driver)
+    cameras.extend(camera_preview)
 
+for camera in cameras:
+    print(camera['detailed_link'])
+    camera['brand'] = 'Canon'
+    camera['images'] = scrape_canon_image(camera['detailed_link'], driver)
+    specs_data = scrape_canon_specs(camera['detailed_link'], driver)
+    camera['pdf'] = specs_data['pdf']
+    camera['specs'] = specs_data['specs']
 
 driver.quit()
 
