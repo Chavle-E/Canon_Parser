@@ -42,6 +42,8 @@ def scroll_to_load_more(driver, load_more_xpath=None):
                     time.sleep(3)
             except Exception as e:
                 print(f"No more 'Load More' button to click or error clicking it: {e}")
+                scroll_page_to_bottom(driver)
+                break
 
         scroll_page_to_bottom(driver)
 

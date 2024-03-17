@@ -1,34 +1,31 @@
 from scraper import scrape_canon_preview, scrape_canon_image, scrape_canon_specs
 import json
-import undetected_chromedriver as uc
+# import undetected_chromedriver as uc
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from fake_useragent import UserAgent
 
-options = uc.ChromeOptions()
+options = Options()
 options.add_argument("--no-sandbox")
-options.add_argument('--headless')
 options.add_argument("--disable-dev-shm-usage")
 ua = UserAgent()
 user_agent = ua.random
-print(user_agent)
 
 options.add_argument(f'--user-agent={user_agent}')
-driver = uc.Chrome(options=options)
+driver = webdriver.Chrome(options=options)
 cameras = []
 
 categories = ['mirrorless-cameras', 'dslr-cameras', 'compact-cameras']
 for category in categories:
     camera_preview = scrape_canon_preview(category, driver)
     cameras.extend(camera_preview)
-
+print(cameras)
 for camera in cameras:
-    print(camera['detailed_link'])
     camera['brand'] = 'Canon'
     camera['images'] = scrape_canon_image(camera['detailed_link'], driver)
     specs_data = scrape_canon_specs(camera['detailed_link'], driver)
     camera['pdf'] = specs_data['pdf']
     camera['specs'] = specs_data['specs']
-
-
 
 driver.quit()
 

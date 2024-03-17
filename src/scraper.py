@@ -29,7 +29,7 @@ def scrape_canon_preview(category, driver):
                 camera_dict = {
                     'model': name.get_text(strip=True),
                     'price': price_span.find('span', class_='price').get_text(strip=True),
-                    'detailed_link': name.find('a', class_='product-item-link').get('href'),
+                    'detailed_link': f"{name.find('a', class_='product-item-link').get('href')}?color=Black&type=New",
                     'category': category
                 }
 
@@ -50,6 +50,7 @@ def scrape_canon_image(url, driver):
         image_urls.append(photo.find('img', class_='fotorama__img')['src'])
 
     ImageURLS.parse_obj({'images': image_urls})
+    print(image_urls)
     return image_urls
 
 
@@ -77,6 +78,6 @@ def scrape_canon_specs(url, driver):
         'specs': specs_data if specs_data else None,
         'pdf': pdf_div.find('a')['href'] if pdf_div and pdf_div.find('a') else None
     }
-
+    print(final_data)
     return final_data
 
