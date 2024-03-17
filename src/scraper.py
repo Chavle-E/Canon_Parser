@@ -78,6 +78,5 @@ def scrape_canon_specs(url, driver):
         'specs': specs_data if specs_data else None,
         'pdf': pdf_div.find('a')['href'] if pdf_div and pdf_div.find('a') else None
     }
-    print(final_data)
     return final_data
 

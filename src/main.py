@@ -1,21 +1,27 @@
+import time
 from scraper import scrape_canon_preview, scrape_canon_image, scrape_canon_specs
-from mongo import collection
+# from mongo import collection
 import json
-
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+import undetected_chromedriver as uc
 from fake_useragent import UserAgent
+import random
 
-chrome_options = Options()
+
+# Adding Options to webdriver
+chrome_options = uc.ChromeOptions()
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--incognito")
+
+# Generating random user-agents
 ua = UserAgent()
 user_agent = ua.random
 
 chrome_options.add_argument(f'--user-agent={user_agent}')
 
-driver = webdriver.Chrome(options=chrome_options)
+
+driver = uc.Chrome(options=chrome_options)
 cameras = []
 
 categories = ['mirrorless-cameras', 'dslr-cameras', 'compact-cameras']
@@ -29,6 +35,9 @@ for camera in cameras:
     specs_data = scrape_canon_specs(camera['detailed_link'], driver)
     camera['pdf'] = specs_data['pdf']
     camera['specs'] = specs_data['specs']
+    for i in range(random.randrange(1, 3)):
+        time.sleep(i)
+
 
 driver.quit()
 
@@ -42,4 +51,6 @@ def save_data(cameras_arg):
             json.dump(camera_arg, json_file, indent=4)
             json_file.write(',\n')
 
-collection.insert_many(cameras)
+
+save_data(cameras)
+# collection.insert_many(cameras)
