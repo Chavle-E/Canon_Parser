@@ -1,14 +1,17 @@
 from scraper import scrape_canon_preview, scrape_canon_image, scrape_canon_specs
 import json
 import undetected_chromedriver as uc
+from fake_useragent import UserAgent
 
 options = uc.ChromeOptions()
 options.add_argument("--no-sandbox")
 options.add_argument('--headless')
 options.add_argument("--disable-dev-shm-usage")
-agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
-options.add_argument(f'user-agent={agent}')
+ua = UserAgent()
+user_agent = ua.random
+print(user_agent)
 
+options.add_argument(f'--user-agent={user_agent}')
 driver = uc.Chrome(options=options)
 cameras = []
 
@@ -24,6 +27,8 @@ for camera in cameras:
     specs_data = scrape_canon_specs(camera['detailed_link'], driver)
     camera['pdf'] = specs_data['pdf']
     camera['specs'] = specs_data['specs']
+
+
 
 driver.quit()
 

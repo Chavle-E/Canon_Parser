@@ -50,7 +50,6 @@ def scrape_canon_image(url, driver):
         image_urls.append(photo.find('img', class_='fotorama__img')['src'])
 
     ImageURLS.parse_obj({'images': image_urls})
-
     return image_urls
 
 
