@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 import time
 
 
@@ -31,24 +32,27 @@ def scroll_page_to_bottom(driver):
         last_height = new_height
 
 
-def scroll_to_load_more(driver, load_more_xpath=None):
-    last_height = driver.execute_script("return document.body.scrollHeight")
+def scroll_to_load_more(driver, xpath):
     while True:
-        if load_more_xpath:
-            try:
-                load_more_button = driver.find_element_by_xpath(load_more_xpath)
-                if load_more_button.is_displayed():
-                    driver.execute_script("arguments[0].click();", load_more_button)
-                    time.sleep(3)
-            except Exception as e:
-                print(f"No more 'Load More' button to click or error clicking it: {e}")
-                scroll_page_to_bottom(driver)
+        try:
+            load_more_button = find_load_more(driver, xpath)
+            if load_more_button:
+                driver.execute_script(
+                    "arguments[0].scrollIntoView({block: 'center', inline: 'center'});",
+                    load_more_button)
+                WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, xpath))
+                )
+                time.sleep(1)
+                load_more_button.click()
+                time.sleep(3)
+            else:
+                print("No more 'Load More' buttons to click.")
                 break
-
-        scroll_page_to_bottom(driver)
-
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
+        except NoSuchElementException:
+            print("The 'Load More' button does not exist.")
             break
-
-        last_height = new_height
+        except Exception as e:
+            print("Print")
+            scroll_page_to_bottom(driver)
+            break
