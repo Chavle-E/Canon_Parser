@@ -8,6 +8,7 @@ from mongo import collection
 import json
 from fake_useragent import UserAgent
 import random
+from chatgp import generate_description
 
 
 # Adding Options to webdriver
@@ -38,6 +39,7 @@ for camera in cameras:
     specs_data = scrape_canon_specs(camera['detailed_link'], driver)
     camera['pdf'] = specs_data['pdf']
     camera['specs'] = specs_data['specs']
+    camera["description"] = generate_description(camera)
     for i in range(random.randrange(1, 3)):
         time.sleep(i)
 
