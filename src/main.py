@@ -8,7 +8,7 @@ from mongo import collection
 import json
 from fake_useragent import UserAgent
 import random
-from chatgp import generate_description
+from chatgpt import generate_description
 
 
 # Adding Options to webdriver
