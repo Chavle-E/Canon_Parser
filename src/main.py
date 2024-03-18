@@ -1,14 +1,17 @@
 import time
+
+from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
+
 from scraper import scrape_canon_preview, scrape_canon_image, scrape_canon_specs
-# from mongo import collection
+from mongo import collection
 import json
-import undetected_chromedriver as uc
 from fake_useragent import UserAgent
 import random
 
 
 # Adding Options to webdriver
-chrome_options = uc.ChromeOptions()
+chrome_options = Options()
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-dev-shm-usage")
@@ -21,7 +24,7 @@ user_agent = ua.random
 chrome_options.add_argument(f'--user-agent={user_agent}')
 
 
-driver = uc.Chrome(options=chrome_options)
+driver = webdriver.Chrome(options=chrome_options)
 cameras = []
 
 categories = ['mirrorless-cameras', 'dslr-cameras', 'compact-cameras']
@@ -52,5 +55,4 @@ def save_data(cameras_arg):
             json_file.write(',\n')
 
 
-save_data(cameras)
-# collection.insert_many(cameras)
+collection.insert_many(cameras)
