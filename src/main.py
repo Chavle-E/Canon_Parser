@@ -27,7 +27,7 @@ chrome_options.add_argument(f'--user-agent={user_agent}')
 driver = webdriver.Chrome(options=chrome_options)
 cameras = []
 
-categories = ['mirrorless-cameras', 'dslr-cameras', 'compact-cameras']
+categories = ['compact-cameras']
 for category in categories:
     camera_preview = scrape_canon_preview(category, driver)
     cameras.extend(camera_preview)

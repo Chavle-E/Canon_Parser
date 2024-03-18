@@ -65,14 +65,14 @@ def scrape_canon_specs(url, driver):
 
     spec_divs = soup.find_all('div', class_=lambda x: x and spec_classes in x)
     pdf_div = soup.find('div', class_=lambda y: y and pdf_classes in y)
-    specs_data = []
+    specs_data = {}
     for specs in spec_divs:
         keys = specs.find_all('div', class_='tech-spec-attr attribute')
         values = specs.find_all('div', class_='tech-spec-attr attribute-value')
         for key, value in zip(keys, values):
             key_text = key.get_text(strip=True)
             value_text = value.get_text(strip=True)
-            specs_data.append({key_text: value_text})
+            specs_data[key_text] = value_text
 
     final_data = {
         'specs': specs_data if specs_data else None,
